@@ -6,7 +6,7 @@ namespace OrderBot
     {
         private enum State
         {
-            INTRESTED, PREFER, RESERVATION, RENTED, STATUS, OUTPUT
+            INTRESTED, PREFER, RESERVATION,RENTED,STATUS,OUTPUT
         }
 
         private State nCur = State.INTRESTED;
@@ -25,6 +25,7 @@ namespace OrderBot
             {
                 case State.INTRESTED:
                     aMessages.Add("Welcome to car rental.");
+                    aMessages.Add("What type of car are you interested in? \n1: Sedan \n 2: SUV");
                     this.nCur = State.PREFER;
                     break;
                 case State.PREFER:
@@ -50,8 +51,9 @@ namespace OrderBot
                     break;
                 case State.OUTPUT:
                     this.oOrder.Status = sInMessage;
+                    this.oOrder.Save();
                     string msg = "Your Reservation is Completed.";
-                    if (this.oOrder.Status == "1")
+                    if(this.oOrder.Status == "1")
                     {
                         msg = "Your Reservation is Cancled..";
                     }

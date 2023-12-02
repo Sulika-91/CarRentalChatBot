@@ -9,16 +9,14 @@ namespace OrderBot
         private string _reservation = String.Empty;
         private string _rented = String.Empty;
         private string _status = String.Empty;
+      
 
-
-        public string Intrested
-        {
+        public string Intrested{
             get => _intrested;
             set => _intrested = value;
         }
 
-        public string Prefer
-        {
+        public string Prefer{
             get => _prefer;
             set => _prefer = value;
         }
@@ -38,32 +36,43 @@ namespace OrderBot
             set => _status = value;
         }
 
-        public void Save()
-        {
-            using (var connection = new SqliteConnection(DB.GetConnectionString()))
+        public void Save(){
+           using (var connection = new SqliteConnection(DB.GetConnectionString()))
             {
                 connection.Open();
 
                 var commandUpdate = connection.CreateCommand();
                 commandUpdate.CommandText =
-                @"
-        UPDATE orders
-        SET size = $size
-        WHERE phone = $phone
-    ";
-                //commandUpdate.Parameters.AddWithValue("$size", Size);
-                //commandUpdate.Parameters.AddWithValue("$phone", Phone);
+               @"
+                UPDATE preferences
+                SET 
+                intrested = $intrested, 
+                prefer = $prefer, 
+                reservation = $reservation, 
+                rented = $rented, 
+                status = $status
+                WHERE intrested = $intrested
+            ";
+                commandUpdate.Parameters.AddWithValue("$intrested", Intrested);
+                commandUpdate.Parameters.AddWithValue("$prefer", Prefer);
+                commandUpdate.Parameters.AddWithValue("$reservation", Reservation);
+                commandUpdate.Parameters.AddWithValue("$rented", Rented);
+                commandUpdate.Parameters.AddWithValue("$status", Status);
+
                 int nRows = commandUpdate.ExecuteNonQuery();
-                if (nRows == 0)
-                {
+                if(nRows == 0){
                     var commandInsert = connection.CreateCommand();
                     commandInsert.CommandText =
-                    @"
-            INSERT INTO orders(size, phone)
-            VALUES($size, $phone)
-        ";
-                    //commandInsert.Parameters.AddWithValue("$size", Size);
-                    //commandInsert.Parameters.AddWithValue("$phone", Phone);
+                        @"
+                    INSERT INTO preferences(intrested, prefer, reservation, rented, status)
+                    VALUES($intrested, $prefer, $reservation, $rented, $status)
+                ";
+                    commandInsert.Parameters.AddWithValue("$intrested", Intrested);
+                    commandInsert.Parameters.AddWithValue("$prefer", Prefer);
+                    commandInsert.Parameters.AddWithValue("$reservation", Reservation);
+                    commandInsert.Parameters.AddWithValue("$rented", Rented);
+                    commandInsert.Parameters.AddWithValue("$status", Status);
+
                     int nRowsInserted = commandInsert.ExecuteNonQuery();
 
                 }
